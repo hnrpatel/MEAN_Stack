@@ -1,0 +1,76 @@
+<!doctype html>
+<html ng-app="app">
+<head>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular.min.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.16/angular-resource.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="layout/styles/layout.css" type="text/css" />
+  <script type="text/javascript" src="layout/scripts/jquery.min.js"></script>
+<script type="text/javascript" src="layout/scripts/jquery.jcarousel.pack.js"></script>
+<script type="text/javascript" src="layout/scripts/jquery.jcarousel.setup.js"></script>
+</head>
+<body class="container">
+<div class="wrapper col1">
+ <div id="header">
+<div class="page-header">
+  <h1>
+    <i class="glyphicon glyphicon-th-list"></i> student list
+    
+  </h1>
+</div>
+
+<div class="jumbotron" ng-controller="studentsSchema as student">
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="list-group">
+        <span class="list-group-item" ng-repeat="students in student.list"
+              target="_blank">
+          <button ng-click="student.onDelete(students._id)">Delete</button>
+          <i class="glyphicon glyphicon-user"></i> {{students.name}}
+          <span class="label label-danger pull-right">{{students.Id}}</span>
+        </span>
+      </div>
+    </div>
+  <div id="topnav">
+    <div class="col-sm-6">
+      <input type="text" ng-model="name" placeholder="Name">
+
+      <input type="text" ng-model="Id" placeholder="Id">
+      <button ng-click="student.create(name, Id)">Save</button>
+    </div>
+	  </div>
+  </div>
+</div>
+</div>
+</div>
+</body>
+
+<script>
+  angular.module('app', ['ngResource'])
+      .controller('studentsSchema', function ($http) {
+        var me = this;
+        this.query = function () {
+          $http.get('http://localhost:3000/student')
+              .success(function (student) {
+                me.list = student;
+              });
+        };
+
+        this.onDelete = function (id) {
+          $http.delete('http://localhost:3000/student/' + id)
+              .success(function () {
+                me.query();
+              });
+        };
+
+        this.create = function (name, Id) {
+          $http.post('http://localhost:3000/student', {name: name, Id: Id})
+              .success(function () {
+                me.query();
+              });
+        };
+
+        this.query();
+      });
+</script>
+</html>
